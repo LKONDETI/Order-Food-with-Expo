@@ -69,11 +69,11 @@ export default function FoodItems() {
             <Text style={styles.Name}>{item.foods}</Text>
             <Text style={styles.Desc}>{item.Description}</Text>
             <Text style={styles.PriceDesc}>Price:{item.price}</Text>
-            {/* <Button
+            <Button
               title="Add to Cart"
-              onPress={() => addToCart(item)}
-              color="green"
-            /> */}
+              color="blue"
+            />
+            {/* onPress={() => addToCart(item)} */}
           </View>
         ))
       ) : (
