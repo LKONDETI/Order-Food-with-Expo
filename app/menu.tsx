@@ -9,8 +9,9 @@ export default function FoodItems() {
     const [items, setItems] = useState([]);
     const route = useRoute();
     const { FoodId } = route.params;
-
-    // const { addToCart } = useCart();
+    const [cart, setCart] = useState([]);
+    const [cartId, setCartId] = useState(null);
+    
 
     const fetchItems = async () => {
         const { data, error } = await supabase
@@ -47,7 +48,34 @@ export default function FoodItems() {
         console.error('Failed to fetch item details');
         }
     };
-
+    const addToCart = (item) => {
+      setCart([...cart, item]);
+    };
+    const saveCart = async () => {
+      const { data, error } = await supabase.from('carts').insert({ items: cart }).select('id');
+      if (error) {
+        console.error(error);
+      } else {
+        setCartId(data[0].id);
+        console.log('Cart saved with ID:', data[0].id);
+      }
+    };
+    const purchase = async () => {
+      if (!cartId) {
+        console.error('Cart ID is not available.');
+        return;
+      }
+  
+      const { data, error } = await supabase
+        .from('purchases')
+        .insert({ cart_id: cartId })
+        .select('id');
+      if (error) {
+        console.error(error);
+      } else {
+        console.log('Purchase completed with ID:', data[0].id);
+      }
+    };
   return (
     <ScrollView style={styles.container}>
         
@@ -71,6 +99,7 @@ export default function FoodItems() {
             <Text style={styles.PriceDesc}>Price:{item.price}</Text>
             <Button
               title="Add to Cart"
+              onPress={() => addToCart(item)}
               color="blue"
             />
             {/* onPress={() => addToCart(item)} */}
@@ -80,7 +109,9 @@ export default function FoodItems() {
         <Text>No food items found.</Text>
       )} 
       </View>
-      
+
+      <Button title="Save Cart" onPress={saveCart} />
+      <Button title="Purchase" onPress={purchase} />
     </ScrollView>
   );
 }
