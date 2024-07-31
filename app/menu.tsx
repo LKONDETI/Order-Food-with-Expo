@@ -3,14 +3,16 @@ import { View, Text, StyleSheet, Button, ScrollView, TouchableOpacity, Virtualiz
 import { supabase } from '@/components/navigation/supabase';
 import { useRoute } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
-import { useCart } from './CartContent';
+import { useNavigation } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function FoodItems() {
     const [items, setItems] = useState([]);
     const route = useRoute();
+    const navigation = useNavigation();
     const { FoodId } = route.params;
     const [cart, setCart] = useState([]);
-    const [cartId, setCartId] = useState(null);
+    // const [cartId, setCartId] = useState(null);
     
 
     const fetchItems = async () => {
@@ -48,34 +50,24 @@ export default function FoodItems() {
         console.error('Failed to fetch item details');
         }
     };
-    const addToCart = (item) => {
-      setCart([...cart, item]);
-    };
-    const saveCart = async () => {
-      const { data, error } = await supabase.from('carts').insert({ items: cart }).select('id');
-      if (error) {
-        console.error(error);
-      } else {
-        setCartId(data[0].id);
-        console.log('Cart saved with ID:', data[0].id);
+
+    const addToCart = async (item) => {
+      try {
+        const cart = await AsyncStorage.getItem('cart');
+        const cartItems = cart ? JSON.parse(cart) : [];
+        cartItems.push(item);
+        await AsyncStorage.setItem('cart', JSON.stringify(cartItems));
+        console.log('Product added to cart:', item.foods);
+      } catch (error) {
+        console.error('Error adding product to cart:', error);
       }
     };
-    const purchase = async () => {
-      if (!cartId) {
-        console.error('Cart ID is not available.');
-        return;
-      }
   
-      const { data, error } = await supabase
-        .from('purchases')
-        .insert({ cart_id: cartId })
-        .select('id');
-      if (error) {
-        console.error(error);
-      } else {
-        console.log('Purchase completed with ID:', data[0].id);
-      }
+    
+    const goToCart = () => {
+      navigation.navigate('cart');
     };
+  
   return (
     <ScrollView style={styles.container}>
         
@@ -102,7 +94,7 @@ export default function FoodItems() {
               onPress={() => addToCart(item)}
               color="blue"
             />
-            {/* onPress={() => addToCart(item)} */}
+           
           </View>
         ))
       ) : (
@@ -110,8 +102,8 @@ export default function FoodItems() {
       )} 
       </View>
 
-      <Button title="Save Cart" onPress={saveCart} />
-      <Button title="Purchase" onPress={purchase} />
+      
+      <Button title="Go to Cart" onPress={goToCart} />
     </ScrollView>
   );
 }

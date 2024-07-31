@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ActivityIndicator, StyleSheet ,ScrollView, Button, TouchableOpacity } from "react-native";
+import { View, Text, ActivityIndicator, StyleSheet ,ScrollView, Button, TouchableOpacity, TouchableHighlight, Pressable } from "react-native";
 import { supabase } from "@/components/navigation/supabase";
 import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
@@ -43,13 +43,17 @@ export default function DisplayFoodTypes(){
             <Text style={styles.Name}>{food.name}</Text>
             <Text style={styles.Desc}>{food.description}</Text>
             <TouchableOpacity
-            style={styles.Button}
-            onPress={() => navigation.navigate('menu', { FoodId: food.id })} >
+            style={styles.Button} 
+            // title="go to the menu"
+            onPress={() => navigation.navigate('menu', { FoodId: food.id })} 
+            >
+              {/* color= "grey" */}
               <FontAwesome
                 name={'arrow-right'}
                 color="black"
                 style={styles.ButtonSize}
               />
+              {/* ores the spacebar */}
               </TouchableOpacity>
                 
                 

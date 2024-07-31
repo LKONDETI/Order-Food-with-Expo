@@ -31,6 +31,7 @@ export default function RootLayout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="menu" />
       <Stack.Screen name="cart" />
+      <Stack.Screen name="success" />
     </Stack>
   );
 }
